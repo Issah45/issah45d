@@ -1,7 +1,9 @@
 
 ## Install guide
 
-```git clone https://github.com/Issah45/issah45d```
+```bash
+git clone https://github.com/Issah45/issah45d
+```
 
 1. install qtile
 2. read the requirements file and install the packages needed
