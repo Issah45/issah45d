@@ -1,5 +1,6 @@
-
 qtile
 alacritty
 nm-applet
 pa-applet
+rofi
+nitrogen (optional)
