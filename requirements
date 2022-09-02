@@ -1,6 +1,6 @@
-qtile
+i3
 alacritty
 nm-applet
 pa-applet
 rofi
-nitrogen (optional)
+nitrogen
