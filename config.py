@@ -139,44 +139,57 @@ layouts = [
 widget_defaults = dict(
     font="monospace",
     fontsize=12,
-    padding=3,
+    padding=4,
 )
 extension_defaults = widget_defaults.copy()
 
-colors = ["66aa66", "00ccff"]
+colors = ["2F4C01", "1B014C", "1b05cf"]
 
 @lazy.function
 def rofi():
 	qtile.cmd_spawn("rofi -show run")
 
+widgetList = [
+        widget.Image(
+            filename="/home/issah45/Pictures/qlogo.png",
+            mouse_callbacks={"Button1": lazy.spawn("rofi -show run")}
+        ),
+        widget.GroupBox(
+            padding=1,
+            highlight_method="text"
+        ),
+        widget.WindowName(
+            foreground=colors[2]
+        ),
+        widget.Systray(
+            background=colors[0]
+        ),
+        widget.Clock(
+            format="%Y-%m-%d %a %I:%M",
+            background=colors[1]
+        ),
+        widget.CurrentLayout(
+            background=colors[0]
+        ),
+        widget.TextBox(
+            "htop",
+            background=colors[1],
+            mouse_callbacks={"Button1": lazy.spawn(terminal + " -e htop")}
+        ),
+        widget.CheckUpdates(
+            no_update_string="No Updates",
+            background=colors[0],
+            mouse_callbacks={"Button1": lazy.spawn(terminal + " -e sudo pacman -Syu")}
+        )
+]
+
 screens = [
     Screen(
         #bottom=bar.Bar([], 24),
         top=bar.Bar(
-            [
-                widget.Image(filename="/home/issah45/Pictures/qlogo.png", mouse_callbacks={"Button1": lazy.spawn("rofi -show run")}),
-                widget.GroupBox(highlight_method="line"),
-                #widget.Prompt(),
-                widget.WindowName(),
-                #widget.TaskList(),
-                #widget.Chord(
-                #    chords_colors={
-                #        "launch": ("#ff0000", "#ffffff"),
-                #    },
-                #    name_transform=lambda name: name.lower(),
-                #),
-                #widget.TextBox("default config", name="default"),
-                #widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
-                widget.Systray(background=colors[0]),
-                #widget.Net(format="{down} | {up}"),
-                widget.Clock(format="%Y-%m-%d %a %I:%M", background=colors[1]),
-               # widget.CurrentLayoutIcon(background=colors[0]),
-                widget.CurrentLayout(background=colors[0]),
-                widget.CheckUpdates(no_update_string="No Updates", update_string="Updates", background=colors[1], mouse_callbacks={"Button1": lazy.spawn(terminal + " --command sudo pacman -Syu")}),
-                #widget.QuickExit(background=colors[0])
-            ],
-            22,
-            #background=["111111", "000000"],
+            widgetList,
+            20,
+            background=["#080018"],
             #border_width=[5, 0, 0, 0],  # Draw top and bottom borders
             #border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
         )
