@@ -1,6 +1,6 @@
 qtile
 alacritty
-nm-applet
-pa-applet
-rofi
+ps-util
+dmenu
 nitrogen
+nerd-fonts-dejavu-complete
