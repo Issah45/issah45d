@@ -1,6 +1,6 @@
 # Copyright (c) 2010 Aldo Cortesi
 # Copyright (c) 2010, 2014 dequis
-# Copyright (c) 2012 Randall Ma 
+# Copyright (c) 2012 Randall Ma
 # Copyright (c) 2012-2014 Tycho Andersen
 # Copyright (c) 2012 Craig Barnes
 # Copyright (c) 2013 horsik
@@ -28,29 +28,15 @@ from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
-from libqtile import qtile
-
-#autostart
-import os
-import subprocess
-from libqtile import hook
+from libqtile import hook, qtile
 
 @hook.subscribe.startup
 def autostart():
-	#home = os.path.expanduser('~/.config/qtile/autostart.sh')
-	#subprocess.call([home])
-	#qtile.cmd_spawn("pkill pulseaudio")
-	qtile.cmd_spawn("pkill pa-applet")
-	qtile.cmd_spawn("nm-applet")
-	qtile.cmd_spawn("pa-applet")
-	qtile.cmd_spawn("pulseaudio")
-	qtile.cmd_spawn("xfce4-power-manager")
-	#qtile.cmd_spawn("clipit")
-	qtile.cmd_spawn("nitrogen --restore")
-
+    #qtile.cmd_spawn("picom")
+    qtile.cmd_spawn("nitrogen --restore")
 
 mod = "mod4"
-terminal = "alacritty"
+terminal = "alacritty" 
 
 keys = [
     # A list of available commands that can be bound to keys can be found
@@ -89,11 +75,11 @@ keys = [
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
     Key([mod, "shift"], "r", lazy.reload_config(), desc="Reload the config"),
-    Key([mod, "shift"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "d", lazy.spawn("rofi -show run"), desc="Spawn a command using a prompt widget"),
+    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
+    Key([mod], "d", lazy.spawn("dmenu_run"), desc="Spawn a command using a prompt widget"),
 ]
 
-groups = [Group(i) for i in "1234567"]
+groups = [Group(i) for i in "12345678"]
 
 for i in groups:
     keys.extend(
@@ -120,79 +106,71 @@ for i in groups:
     )
 
 layouts = [
-    #layout.MonadTall(),
-    layout.Columns(),
+    layout.MonadTall(),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
-    #layout.Bsp(),
-    #layout.Matrix(),
-    #layout.MonadTall(),
+    # layout.Bsp(),
+    # layout.Matrix(),
+    #  layout.MonadTall(),
     # layout.MonadWide(),
     # layout.RatioTile(),
-    #layout.Tile(),
+    # layout.Tile(),
     # layout.TreeTab(),
     # layout.VerticalTile(),
     # layout.Zoomy(),
 ]
 
 widget_defaults = dict(
-    font="monospace",
+    font="DejaVu Sans Mono",
     fontsize=12,
-    padding=4,
+    padding=3,
 )
 extension_defaults = widget_defaults.copy()
 
-colors = ["2F4C01", "1B014C", "1b05cf"]
+colors = ["4400cc", "31125A", "024643"]
 
-@lazy.function
-def rofi():
-	qtile.cmd_spawn("rofi -show run")
-
-widgetList = [
-        widget.Image(
-            filename="/home/issah45/Pictures/qlogo.png",
-            mouse_callbacks={"Button1": lazy.spawn("rofi -show run")}
-        ),
-        widget.GroupBox(
-            padding=1,
-            highlight_method="text"
-        ),
-        widget.WindowName(
-            foreground=colors[2]
-        ),
-        widget.Systray(
-            background=colors[0]
-        ),
-        widget.Clock(
-            format="%Y-%m-%d %a %I:%M",
-            background=colors[1]
-        ),
-        widget.CurrentLayout(
-            background=colors[0]
-        ),
-        widget.TextBox(
-            "htop",
-            background=colors[1],
-            mouse_callbacks={"Button1": lazy.spawn(terminal + " -e htop")}
-        ),
-        widget.CheckUpdates(
-            no_update_string="No Updates",
-            background=colors[0],
-            mouse_callbacks={"Button1": lazy.spawn(terminal + " -e sudo pacman -Syu")}
-        )
+widget_list = [
+        #base
+        widget.Image(filename="/home/issah45/Pictures/qtile/qlogo.png", mouse_callbacks={"Button1": lazy.spawn(terminal)}),
+        widget.GroupBox(highlight_method="line", borderwidth=1),
+        widget.WindowName(),
+        widget.Systray(),
+        #time
+        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple.png"),
+        widget.TextBox("", background=colors[1]),
+        widget.Clock(format="%Y-%m-%d %a %I:%M %p", background=colors[1]),
+        #net
+        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
+        widget.TextBox("", background=colors[0]),
+        widget.Net(background=colors[0], format="{up} | {down}"),
+        #updates
+        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple2-purple.png"),
+        widget.TextBox("", background=colors[1]),
+        widget.CheckUpdates(no_update_string="No Updates", background=colors[1], mouse_callbacks={"Button1": lazy.spawn(terminal + " -e 'sudo pacman -Syu'")}),
+        #memory
+        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
+        widget.TextBox("", background=colors[0]),
+        widget.Memory(background=colors[0]),
+        #layout
+        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple2-purple.png"),
+        widget.CurrentLayoutIcon(background=colors[1], scale=0.8),
+        widget.CurrentLayout(background=colors[1]),
+        #volume
+        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
+        widget.TextBox(" Vol:", background=colors[0]),
+        widget.PulseVolume(background=colors[0])
 ]
+
 
 screens = [
     Screen(
-        #bottom=bar.Bar([], 24),
         top=bar.Bar(
-            widgetList,
+            widget_list,
             20,
-            background=["#080018"],
-            #border_width=[5, 0, 0, 0],  # Draw top and bottom borders
-            #border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
-        )
+            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
+            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+        ),
     ),
 ]
 
