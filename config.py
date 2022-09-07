@@ -80,6 +80,7 @@ keys = [
 ]
 
 groups = [Group(i) for i in "12345678"]
+myG = Group("www")
 
 for i in groups:
     keys.extend(
@@ -105,20 +106,31 @@ for i in groups:
         ]
     )
 
+keys.extend(
+        [
+            Key(
+                [mod],
+                "9",
+                lazy.group["w"].toscreen(),
+            )
+        ]
+)
+
 layouts = [
-    layout.MonadTall(),
+    layout.Columns(),
     layout.Max(),
+    # layout.Floating(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
-    # layout.Bsp(),
-    # layout.Matrix(),
+    #layout.Bsp(),
+    #layout.Matrix(),
     #  layout.MonadTall(),
-    # layout.MonadWide(),
-    # layout.RatioTile(),
-    # layout.Tile(),
-    # layout.TreeTab(),
-    # layout.VerticalTile(),
-    # layout.Zoomy(),
+    #layout.MonadWide(),
+    #layout.RatioTile(),
+    #layout.Tile(),
+    #layout.TreeTab(),
+    #layout.VerticalTile(),
+    #layout.Zoomy(),
 ]
 
 widget_defaults = dict(
@@ -128,13 +140,13 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-colors = ["4400cc", "31125A", "024643"]
+colors = ["4400cc", "31125A"]
 
 widget_list = [
         #base
         widget.Image(filename="/home/issah45/Pictures/qtile/qlogo.png", mouse_callbacks={"Button1": lazy.spawn(terminal)}),
-        widget.GroupBox(highlight_method="line", borderwidth=1),
-        widget.WindowName(),
+        widget.GroupBox(highlight_method="line", borderwidth=0),
+        widget.WindowName(foreground=colors[0]),
         widget.Systray(),
         #time
         widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple.png"),
@@ -143,7 +155,7 @@ widget_list = [
         #net
         widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
         widget.TextBox("", background=colors[0]),
-        widget.Net(background=colors[0], format="{up} | {down}"),
+        widget.Net(format="{up}  {down}", background=colors[0]),
         #updates
         widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple2-purple.png"),
         widget.TextBox("", background=colors[1]),
@@ -154,7 +166,8 @@ widget_list = [
         widget.Memory(background=colors[0]),
         #layout
         widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple2-purple.png"),
-        widget.CurrentLayoutIcon(background=colors[1], scale=0.8),
+        #widget.TextBox("|"),
+        widget.CurrentLayoutIcon(scale=0.8, background=colors[1]),
         widget.CurrentLayout(background=colors[1]),
         #volume
         widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
