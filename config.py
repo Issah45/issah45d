@@ -24,19 +24,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from libqtile import bar, layout, widget
+from libqtile import bar, layout, widget, hook, qtile
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
-from libqtile import hook, qtile
+import os, subprocess
 
 @hook.subscribe.startup
 def autostart():
-    #qtile.cmd_spawn("picom")
     qtile.cmd_spawn("nitrogen --restore")
 
 mod = "mod4"
-terminal = "alacritty" 
+terminal = guess_terminal()
 
 keys = [
     # A list of available commands that can be bound to keys can be found
@@ -79,58 +78,67 @@ keys = [
     Key([mod], "d", lazy.spawn("dmenu_run"), desc="Spawn a command using a prompt widget"),
 ]
 
-groups = [Group(i) for i in "12345678"]
-myG = Group("www")
+def init_group_names():
+    return [("WWW", {"layout": "columns"}),
+            ("DEV", {"layout": "columns"}),
+            ("PLY", {"layout": "columns"}),
+            ("REC", {"layout": "columns"}),
+            ("RDEV", {"layout": "columns"}),
+            ("VFX", {"layout": "columns"})]
 
-for i in groups:
-    keys.extend(
-        [
-            # mod1 + letter of group = switch to group
-            Key(
-                [mod],
-                i.name,
-                lazy.group[i.name].toscreen(),
-                desc="Switch to group {}".format(i.name),
-            ),
+def init_groups():
+            return [Group(name, **kwargs) for name, kwargs in group_names]
+
+if __name__ in ["config", "__main__"]:
+    group_names = init_group_names()
+    groups = init_groups()
+
+for i, (name, kwargs) in enumerate(group_names, 1):
+            keys.append(Key([mod], str(i), lazy.group[name].toscreen()))
+            keys.append(Key([mod, "shift"], str(i), lazy.window.togroup(name)))
+#print(i for i in enumerate(group_names))
+#groups = [Group(i) for i in "123456789"]
+
+#for i in groups:
+#    keys.extend(
+#        [
+#            # mod1 + letter of group = switch to group
+#            Key(
+#                [mod],
+#                i.name,
+#                lazy.group[i.name].toscreen(),
+#                desc="Switch to group {}".format(i.name),
+#            ),
             # mod1 + shift + letter of group = switch to & move focused window to group
-            Key(
-                [mod, "shift"],
-                i.name,
-                lazy.window.togroup(i.name, switch_group=True),
-                desc="Switch to & move focused window to group {}".format(i.name),
-            ),
-            # Or, use below if you prefer not to switch to that group.
-            # # mod1 + shift + letter of group = move focused window to group
-            # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
-            #     desc="move focused window to group {}".format(i.name)),
-        ]
-    )
+#            Key(
+#                [mod, "shift"],
+#                i.name,
+#                lazy.window.togroup(i.name, switch_group=True),
+#                desc="Switch to & move focused window to group {}".format(i.name),
+#            ),
+#            # Or, use below if you prefer not to switch to that group.
+#            # # mod1 + shift + letter of group = move focused window to group
+#            # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
+#            #     desc="move focused window to group {}".format(i.name)),
+#        ]
+#    )
 
-keys.extend(
-        [
-            Key(
-                [mod],
-                "9",
-                lazy.group["w"].toscreen(),
-            )
-        ]
-)
+coly = ["88c0d0", "4c566a"]
 
 layouts = [
-    layout.Columns(),
+    layout.Columns(border_focus=coly[0], border_normal=coly[1]),
     layout.Max(),
-    # layout.Floating(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
-    #layout.Bsp(),
-    #layout.Matrix(),
-    #  layout.MonadTall(),
-    #layout.MonadWide(),
-    #layout.RatioTile(),
-    #layout.Tile(),
-    #layout.TreeTab(),
-    #layout.VerticalTile(),
-    #layout.Zoomy(),
+    # layout.Bsp(),
+    # layout.Matrix(),
+    # layout.MonadTall(),
+    # layout.MonadWide(),
+    # layout.RatioTile(),
+    # layout.Tile(),
+    # layout.TreeTab(),
+    # layout.VerticalTile(),
+    # layout.Zoomy(),
 ]
 
 widget_defaults = dict(
@@ -140,47 +148,27 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-colors = ["4400cc", "31125A"]
-
-widget_list = [
-        #base
-        widget.Image(filename="/home/issah45/Pictures/qtile/qlogo.png", mouse_callbacks={"Button1": lazy.spawn(terminal)}),
-        widget.GroupBox(highlight_method="line", borderwidth=0),
-        widget.WindowName(foreground=colors[0]),
-        widget.Systray(),
-        #time
-        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple.png"),
-        widget.TextBox("", background=colors[1]),
-        widget.Clock(format="%Y-%m-%d %a %I:%M %p", background=colors[1]),
-        #net
-        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
-        widget.TextBox("", background=colors[0]),
-        widget.Net(format="{up}  {down}", background=colors[0]),
-        #updates
-        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple2-purple.png"),
-        widget.TextBox("", background=colors[1]),
-        widget.CheckUpdates(no_update_string="No Updates", background=colors[1], mouse_callbacks={"Button1": lazy.spawn(terminal + " -e 'sudo pacman -Syu'")}),
-        #memory
-        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
-        widget.TextBox("", background=colors[0]),
-        widget.Memory(background=colors[0]),
-        #layout
-        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple2-purple.png"),
-        #widget.TextBox("|"),
-        widget.CurrentLayoutIcon(scale=0.8, background=colors[1]),
-        widget.CurrentLayout(background=colors[1]),
-        #volume
-        widget.Image(filename="/home/issah45/Pictures/qtile/powerline-purple-purple2.png"),
-        widget.TextBox(" Vol:", background=colors[0]),
-        widget.PulseVolume(background=colors[0])
-]
-
+colors = ["5E81AC", "B48EAD", "2E3440", "D8DEE9"]
 
 screens = [
     Screen(
         top=bar.Bar(
-            widget_list,
+            [
+                #widget.CurrentLayout(),
+                widget.GroupBox(highlight_method="text", highlight_color=colors[2], inactive="999999", rounded=False, this_screen_border="b48ead", this_current_screen_border=colors[1]),
+                widget.Prompt(),
+                widget.WindowName(foreground=colors[1]),
+                widget.Systray(),
+                #widget.Memory(),
+                #widget.Net(),
+                widget.CurrentLayout(foreground=colors[0]),
+                widget.Memory(foreground=colors[1]),
+                widget.PulseVolume(foreground=colors[0], fmt="Vol: {}"),
+                widget.Wlan(foreground=colors[1], interface="wlp10s0f0"),
+                widget.Clock(format="%Y-%m-%d %a %I:%M %p", foreground=colors[0]),
+            ],
             20,
+            background=[colors[2]]
             # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
             # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
         ),
@@ -230,4 +218,4 @@ wl_input_rules = None
 #
 # We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
 # java that happens to be on java's whitelist.
-wmname = "LG3D"
+wmname = "openbox"
