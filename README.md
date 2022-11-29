@@ -4,9 +4,8 @@
 ```bash
 git clone https://github.com/Issah45/issah45d
 ```
-
+0.5. install nitrogen and ps-util
 1. install qtile
-3. then get the images in the images folder and put them in wherever
-4. then open nitrogen and set the wallpaper to whatever (optional)
-5. then get the config.py and replace your existing qtile config with it
-6. go to the config.py and change the image path
+2. then open nitrogen and set the wallpaper to whatever (optional)
+3. then get the config.py and replace your existing qtile config with it
+4. go to the config.py and change the image path
